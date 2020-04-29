@@ -13,6 +13,17 @@ router.get("/:line", async (req, res) => {
   const filename = `./data/${req.params.line}.txt`;
   res.set("Content-Type", "application/json");
 
+  if (fs.existsSync(filename)) {
+    return await fileHelper.readFile(filename).then((txt) => {
+      res.status(200).send({
+        id: `${req.params.line}`,
+        body: txt,
+        status: null,
+      });
+    });
+  } else {
+    res.send({ id: req.params.line, status: "nonexist" });
+  }
   // TODO : Help function을 이용하여, 주어진 filename의 내용을 읽을 수 있도록 구현하세요.
   /*
    * fs.existsSync 를 이용하여, 존재하지 않는 파일에 대해서 에러 핸들링을 할 수 있어야 합니다.
@@ -22,6 +33,16 @@ router.get("/:line", async (req, res) => {
 // POST /data/{lineNo}
 router.post("/:line", async (req, res) => {
   const lineNo = req.params.line;
+  let filename = `./data/${lineNo}.txt`;
+  const urlName = await fileHelper.readLineFromSourceList(lineNo);
+  const html = await fetchHelper.retrieveArticle(urlName);
+
+  const dom = new JSDOM(html);
+  const article = dom.window.document.querySelector("article").textContent;
+
+  await fileHelper.writeFile(filename, article);
+  // const read = readFile(`./data/${lineNo}.txt`)
+  res.send("ok");
 
   // TODO : Help function을 이용하여, 주어진 filename에 내용을 저장할 수 있도록 구현하세요.
   /*
