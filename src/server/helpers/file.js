@@ -31,5 +31,5 @@ module.exports = {
   writeSourceListFile,
   writeFile,
   readFile,
-  readLineFromSourceList
+  readLineFromSourceList,
 };
